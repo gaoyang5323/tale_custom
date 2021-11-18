@@ -54,6 +54,7 @@ public class CommentsService {
             comments.setCreated(DateKit.nowUnix());
             comments.setParent(null == comments.getCoid() ? 0 : comments.getCoid());
             comments.setCoid(null);
+            comments.setMail(null == comments.getMail() ? "" : comments.getMail());
             comments.save();
 
             new Contents().set(Contents::getCommentsNum, contents.getCommentsNum() + 1).updateById(contents.getCid());
@@ -114,7 +115,7 @@ public class CommentsService {
     }
 
     private Comment apply(Comments parent) {
-        Comment        comment  = new Comment(parent);
+        Comment comment = new Comment(parent);
         List<Comments> children = new ArrayList<>();
         getChildren(children, comment.getCoid());
         comment.setChildren(children);

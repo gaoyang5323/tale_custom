@@ -25,15 +25,15 @@ public class CommonValidator {
         Validators.notEmpty().test(param.getAuthor()).throwIfInvalid("评论作者");
         Validators.lessThan(30).test(param.getAuthor()).throwIfInvalid("姓名");
 
-        Validators.notEmpty().test(param.getMail()).throwIfInvalid("电子邮箱");
-        Validators.isEmail().test(param.getMail()).throwIfInvalid("电子邮箱");
+        //Validators.notEmpty().test(param.getMail()).throwIfInvalid("电子邮箱");
+        //Validators.isEmail().test(param.getMail()).throwIfInvalid("电子邮箱");
 
         if (StringKit.isNotBlank(param.getUrl())) {
             Validators.isURL().test(param.getUrl()).throwIfInvalid("网址");
         }
 
         Validators.notEmpty().test(param.getContent()).throwIfInvalid("内容");
-        Validators.moreThan(5).test(param.getContent()).throwIfInvalid("内容");
+        Validators.moreThan(3).test(param.getContent()).throwIfInvalid("内容");
         Validators.lessThan(2000).test(param.getContent()).throwIfInvalid("内容");
 
         Validators.notNull().test(param.getCid()).throwIfInvalid("评论文章");
@@ -44,7 +44,7 @@ public class CommonValidator {
         Validators.notNull().test(param.getCoid()).throwIfInvalid("评论ID");
 
         Validators.notEmpty().test(param.getContent()).throwIfInvalid("内容");
-        Validators.moreThan(5).test(param.getContent()).throwIfInvalid("内容");
+        Validators.moreThan(3).test(param.getContent()).throwIfInvalid("内容");
         Validators.lessThan(2000).test(param.getContent()).throwIfInvalid("内容");
     }
 

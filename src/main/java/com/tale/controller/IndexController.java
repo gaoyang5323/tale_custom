@@ -16,7 +16,9 @@ import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static io.github.biezhi.anima.Anima.select;
 
@@ -40,6 +42,7 @@ public class IndexController extends BaseController {
      */
     @GetRoute
     public String index(Request request, PageParam pageParam) {
+
         return this.index(request, 1, pageParam.getLimit());
     }
 

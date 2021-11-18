@@ -11,11 +11,11 @@
             <input type="hidden" name="csrf_token" value="${csrf_token}"/>
             <input name="author" maxlength="12" id="author" class="form-control input-control clearfix"
                    placeholder="姓名 (*)" value="${login_user.username ?! ''}" required/>
-            <input type="email" name="mail" id="mail" class="form-control input-control clearfix" placeholder="邮箱 (*)"
-                   value="${login_user.email ?! ''}" required/>
+            <input type="email" name="mail" id="mail" class="form-control input-control clearfix" placeholder="联系方式 (*)"
+                   value="${login_user.email ?! ''}" />
             <input type="url" name="url" id="url" class="form-control input-control clearfix" placeholder="网址 (http://)"
                    value="${login_user.homeUrl ?! ''}"/>
-            <textarea name="content" id="textarea" class="form-control" placeholder="基佬，留下你的评论." required minlength="5" maxlength="2000"></textarea>
+            <textarea name="content" id="textarea" class="form-control" placeholder="Guys，留下你的评论." required minlength="3" maxlength="2000"></textarea>
 
             ${_csrf_token_input}
 
@@ -35,7 +35,7 @@
                 <div id="comment-${comment.coid}">
                     <div class="comment-view" onclick="">
                         <div class="comment-header">
-                            <img class="avatar" src="${gravatar(comment.mail)}?s=80&r=G&d=" title="${comment.author}"
+                            <img class="avatar" src="${theme_url('/static/img/chuju.png')}" title="${comment.author}"
                                  width="80" height="80">
                             <span class="comment-author">
                                 <a href="${comment.url}" target="_blank" rel="external nofollow">${comment.author}</a>
@@ -62,7 +62,7 @@
                             <div id="comment-${child.coid}">
                                 <div class="comment-view">
                                     <div class="comment-header">
-                                        <img class="avatar" src="${gravatar(child.mail)}?s=80&r=G&d=" title="${child.author}" width="80" height="80">
+                                        <img class="avatar" src="${theme_url('/static/img/chuju.png')}" title="${child.author}" width="80" height="80">
                                         <span class="comment-author comment-by-author">
                                             <a href="${child.url}" target="_blank" rel="external nofollow">${child.author}</a>
                                         </span>
