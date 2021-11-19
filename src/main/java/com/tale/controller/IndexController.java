@@ -76,6 +76,7 @@ public class IndexController extends BaseController {
      */
     @GetRoute(value = {"search/:keyword", "search/:keyword.html"})
     public String search(Request request, @PathParam String keyword, @Param(defaultValue = "12") int limit) {
+        keyword = (TaleUtils.cleanXSS(keyword));
         return this.search(request, keyword, 1, limit);
     }
 

@@ -36,6 +36,13 @@
         $('#search').click(function () {
 
         })
+
+        $('#mobile-navbar').click(function () {
+
+
+        })
+
+
     })
 </script>
 
@@ -60,14 +67,14 @@
         </div>
         <div class="navbar-search" onclick="">
             <span class="icon-search" id="search"></span>
-            <form role="search" onsubmit="return false;">
+            <form role="search" onsubmit="return false;" id="formSub">
                 <span class="search-box">
                     <input type="text" id="search-inp" class="input" placeholder="搜索..." maxlength="30"
                            autocomplete="off">
                 </span>
             </form>
         </div>
-        <div class="navbar-mobile-menu" onclick="">
+        <div class="navbar-mobile-menu" id="mobile-navbar">
             <span class="icon-menu cross"><span class="middle"></span></span>
             <ul>
                 <li><a href="${site_url('/archives')}">归档</a></li>

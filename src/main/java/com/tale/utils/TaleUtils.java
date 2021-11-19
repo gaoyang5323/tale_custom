@@ -29,8 +29,8 @@ import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -47,10 +47,10 @@ public class TaleUtils {
     /**
      * 一个月
      */
-    private static final int     ONE_MONTH   = 30 * 24 * 60 * 60;
-    private static final Random  R           = new Random();
-    private static final Hashids HASH_IDS    = new Hashids(TaleConst.AES_SALT);
-    private static final long[]  HASH_PREFIX = {-1, 2, 0, 1, 7, 0, 9};
+    private static final int ONE_MONTH = 30 * 24 * 60 * 60;
+    private static final Random R = new Random();
+    private static final Hashids HASH_IDS = new Hashids(TaleConst.AES_SALT);
+    private static final long[] HASH_PREFIX = {-1, 2, 0, 1, 7, 0, 9};
 
     /**
      * 匹配邮箱正则
@@ -60,6 +60,8 @@ public class TaleUtils {
 
     private static final Pattern SLUG_REGEX = Pattern.compile("^[A-Za-z0-9_-]{3,50}$", Pattern.CASE_INSENSITIVE);
 
+    public static MapCache cache = MapCache.single();
+
     /**
      * 设置记住密码cookie
      *
@@ -67,6 +69,7 @@ public class TaleUtils {
      * @param uid
      */
     public static void setCookie(Response response, Integer uid) {
+
         try {
             HASH_PREFIX[0] = uid;
             String val = HASH_IDS.encode(HASH_PREFIX);
@@ -156,9 +159,14 @@ public class TaleUtils {
             return "";
         }
 
+        String cacheContent = cache.get(String.valueOf(markdown.hashCode()));
+        if (cacheContent != null) {
+            return cacheContent;
+        }
+
         List<Extension> extensions = Arrays.asList(TablesExtension.create());
-        Parser          parser     = Parser.builder().extensions(extensions).build();
-        Node            document   = parser.parse(markdown);
+        Parser parser = Parser.builder().extensions(extensions).build();
+        Node document = parser.parse(markdown);
         HtmlRenderer renderer = HtmlRenderer.builder()
                 .attributeProviderFactory(context -> new LinkAttributeProvider())
                 .extensions(extensions).build();
@@ -174,6 +182,10 @@ public class TaleUtils {
         if (TaleConst.BCONF.getBoolean(ENV_SUPPORT_GIST, true) && content.contains(GIST_PREFIX_URL)) {
             content = content.replaceAll(GIST_REG_PATTERN, GIST_REPLATE_PATTERN);
         }
+
+
+        cache.set(String.valueOf(markdown.hashCode()), content,
+                TaleConst.BCONF.getLong("md.cache", -1));
         return content;
     }
 
@@ -266,7 +278,7 @@ public class TaleUtils {
             Item item = new Item();
             item.setTitle(post.getTitle());
             Content content = new Content();
-            String  value   = Theme.article(post.getContent());
+            String value = Theme.article(post.getContent());
 
             char[] xmlChar = value.toCharArray();
             for (int i = 0; i < xmlChar.length; ++i) {
@@ -343,6 +355,7 @@ public class TaleUtils {
         value = value.replaceAll("eval\\((.*)\\)", "");
         value = value.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
         value = value.replaceAll("script", "");
+        value = value.replaceAll("\"", "&#34;");
         return value;
     }
 
@@ -390,7 +403,7 @@ public class TaleUtils {
 
     public static String getFileKey(String name) {
         String prefix = "/upload/" + DateKit.toString(new Date(), "yyyy/MM");
-        String dir    = UP_DIR + prefix;
+        String dir = UP_DIR + prefix;
         if (!Files.exists(Paths.get(dir))) {
             new File(dir).mkdirs();
         }

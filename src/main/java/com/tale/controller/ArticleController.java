@@ -21,9 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.net.URLEncoder;
 
-import static com.tale.bootstrap.TaleConst.COMMENT_APPROVED;
-import static com.tale.bootstrap.TaleConst.COMMENT_NO_AUDIT;
-import static com.tale.bootstrap.TaleConst.OPTION_ALLOW_COMMENT_AUDIT;
+import static com.tale.bootstrap.TaleConst.*;
 
 /**
  * @author biezhi
@@ -110,10 +108,11 @@ public class ArticleController extends BaseController {
 
         CommonValidator.valid(comments);
 
-        String  val   = request.address() + ":" + comments.getCid();
+        String val = request.address() + ":" + comments.getCid();
         Integer count = cache.hget(Types.COMMENTS_FREQUENCY, val);
         if (null != count && count > 0) {
-            return RestResponse.fail("您发表评论太快了，请过会再试");
+            long expiredStr = cache.hgetExpiredStr(Types.COMMENTS_FREQUENCY, val);
+            return RestResponse.fail("您发表评论太快了，请" + expiredStr + "秒后再试");
         }
         comments.setIp(request.address());
         comments.setAgent(request.userAgent());

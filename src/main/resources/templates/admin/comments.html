@@ -29,7 +29,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="item in commentPage.rows">
+                        <tr  v-for="item in commentPage.rows">
                             <td>
                                 {{ item.content }}
                             </td>
@@ -171,7 +171,8 @@
                             success: function (result) {
                                 if (result && result.success) {
                                     tale.alertOk('评论删除成功');
-                                    $vm.load();
+                                    //$vm.load();
+                                    window.location. reload();
                                 } else {
                                     tale.alertError(result.msg || '评论删除失败');
                                 }

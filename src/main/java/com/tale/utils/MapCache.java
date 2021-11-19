@@ -48,7 +48,7 @@ public class MapCache {
             if (cacheObject.getExpired() <= 0 || cacheObject.getExpired() > cur) {
                 Object result = cacheObject.getValue();
                 return (T) result;
-            }else{
+            } else {
                 del(key);
             }
         }
@@ -66,6 +66,14 @@ public class MapCache {
     public <T> T hget(String key, String field) {
         key = key + ":" + field;
         return this.get(key);
+    }
+
+    public long hgetExpiredStr(String key, String field) {
+        CacheObject cacheObject = cachePool.get(key + ":" + field);
+        if (cacheObject != null) {
+            return cacheObject.getExpired() - System.currentTimeMillis() / 1000;
+        }
+        return 0L;
     }
 
     /**
