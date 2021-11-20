@@ -38,15 +38,15 @@ public class ContentsService {
      * @param id 唯一标识
      */
     public Contents getContents(String id) {
+        if (StringKit.isBlank(id)) {
+            return null;
+        }
         Contents contents = null;
         if (StringKit.isNotBlank(id)) {
             if (StringKit.isNumber(id)) {
                 contents = select().from(Contents.class).byId(id);
             } else {
                 contents = select().from(Contents.class).where(Contents::getSlug, id).one();
-            }
-            if (null != contents) {
-                return this.mapContent(contents);
             }
         }
         return contents;
@@ -69,7 +69,7 @@ public class ContentsService {
         contents.setModified(time);
         contents.setHits(0);
 
-        String tags       = contents.getTags();
+        String tags = contents.getTags();
         String categories = contents.getCategories();
 
         Integer cid = contents.save().asInt();
@@ -96,7 +96,7 @@ public class ContentsService {
 
         contents.updateById(cid);
 
-        String tags       = contents.getTags();
+        String tags = contents.getTags();
         String categories = contents.getCategories();
 
         if (null != contents.getType() && !contents.getType().equals(Types.PAGE)) {

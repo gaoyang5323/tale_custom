@@ -34,7 +34,10 @@
 <script>
     $(function () {
         $('#search').click(function () {
-
+            var q = $('#search-inp').val();
+            if (q && q !== '') {
+                window.location.href = '/search/' + q;
+            }
         })
 
         $('#mobile-navbar').click(function () {

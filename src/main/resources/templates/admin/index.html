@@ -75,7 +75,7 @@
                                     <div class="inbox-item" v-for="item in comments">
                                         <div class="inbox-item-img">
                                             <a :href="item.url" target="_blank">
-                                                <img :src="item.mail | gravatar" class="img-circle" :alt="item.author">
+                                                <img src="${theme_url('/static/img/chuju.png')}" alt="user-img" class="img-circle">
                                             </a>
                                         </div>
                                         <p class="inbox-item-author">

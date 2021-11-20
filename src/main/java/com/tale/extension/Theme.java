@@ -35,6 +35,8 @@ public final class Theme {
 
     private static SiteService siteService;
 
+    private static final String COMMENTS_ID = "COMMENTS_ID";
+
     public static void setSiteService(SiteService ss) {
         siteService = ss;
     }
@@ -45,8 +47,8 @@ public final class Theme {
      * @return
      */
     public static String meta_keywords() {
-        InterpretContext ctx   = InterpretContext.current();
-        Object           value = ctx.getValueStack().getValue("keywords");
+        InterpretContext ctx = InterpretContext.current();
+        Object value = ctx.getValueStack().getValue("keywords");
         if (null != value) {
             return value.toString();
         }
@@ -59,8 +61,8 @@ public final class Theme {
      * @return
      */
     public static String meta_description() {
-        InterpretContext ctx   = InterpretContext.current();
-        Object           value = ctx.getValueStack().getValue("description");
+        InterpretContext ctx = InterpretContext.current();
+        Object value = ctx.getValueStack().getValue("description");
         if (null != value) {
             return value.toString();
         }
@@ -73,14 +75,32 @@ public final class Theme {
      * @return
      */
     public static String head_title() {
-        InterpretContext ctx   = InterpretContext.current();
-        Object           value = ctx.getValueStack().getValue("title");
+        InterpretContext ctx = InterpretContext.current();
+        Object value = ctx.getValueStack().getValue("title");
 
         String p = "";
         if (null != value) {
             p = value.toString() + " - ";
         }
-        return p + Commons.site_option("site_title", "Tale 博客");
+        return p + Commons.site_option("site_title", "我的博客");
+    }
+
+    /**
+     * 备案
+     *
+     * @return
+     */
+    public static String filing_number() {
+        return TaleConst.BCONF.get("filing.number", "");
+    }
+
+    /**
+     * 人生格言
+     *
+     * @return
+     */
+    public static String life_motto() {
+        return TaleConst.BCONF.get("life.motto", "");
     }
 
     /**
@@ -201,7 +221,7 @@ public final class Theme {
      */
     public static String show_categories(String categories) throws UnsupportedEncodingException {
         if (StringKit.isNotBlank(categories)) {
-            String[]     arr  = categories.split(",");
+            String[] arr = categories.split(",");
             StringBuffer sbuf = new StringBuffer();
             for (String c : arr) {
                 sbuf.append("<a href=\"/category/" + URLEncoder.encode(c, "UTF-8") + "\">" + c + "</a>");
@@ -220,7 +240,7 @@ public final class Theme {
     public static String show_tags(String split) throws UnsupportedEncodingException {
         Contents contents = current_article();
         if (StringKit.isNotBlank(contents.getTags())) {
-            String[]     arr  = contents.getTags().split(",");
+            String[] arr = contents.getTags().split(",");
             StringBuffer sbuf = new StringBuffer();
             for (String c : arr) {
                 sbuf.append(split).append("<a href=\"/tag/" + URLEncoder.encode(c, "UTF-8") + "\">" + c + "</a>");
@@ -347,16 +367,16 @@ public final class Theme {
             return "";
         }
         if (StringKit.isNotBlank(contents.getThumbImg())) {
-            String newFileName       = TaleUtils.getFileName(contents.getThumbImg());
+            String newFileName = TaleUtils.getFileName(contents.getThumbImg());
             String thumbnailImgUrl = (contents.getThumbImg()).replace(newFileName, "thumbnail_" + newFileName);
             return thumbnailImgUrl;
         }
         String content = article(contents.getContent());
-        String img     = Commons.show_thumb(content);
+        String img = Commons.show_thumb(content);
         if (StringKit.isNotBlank(img)) {
             return img;
         }
-        int cid  = contents.getCid();
+        int cid = contents.getCid();
         int size = cid % 20;
         size = size == 0 ? 1 : size;
         return "/templates/themes/default/static/img/rand/" + size + ".jpg";
@@ -637,14 +657,13 @@ public final class Theme {
         if (null == contents) {
             return new Page<>();
         }
-        InterpretContext ctx   = InterpretContext.current();
-        Object           value = ctx.getValueStack().getValue("cp");
-        int              page  = 1;
+        InterpretContext ctx = InterpretContext.current();
+        Object value = ctx.getValueStack().getValue("cp");
+        int page = 1;
         if (null != value) {
             page = (int) value;
         }
-        Page<Comment> comments = siteService.getComments(contents.getCid(), page, limit);
-        return comments;
+        return siteService.getComments(contents.getCid(), page, limit);
     }
 
     /**
@@ -655,7 +674,7 @@ public final class Theme {
      */
     public static Page<Contents> articles(int limit) {
         Request request = WebContext.request();
-        Integer page    = request.attribute("page_num");
+        Integer page = request.attribute("page_num");
         page = null == page ? request.queryInt("page", 1) : page;
         page = page < 0 || page > TaleConst.MAX_PAGE ? 1 : page;
 
@@ -680,8 +699,8 @@ public final class Theme {
      * @return
      */
     private static Contents current_article() {
-        InterpretContext ctx   = InterpretContext.current();
-        Object           value = ctx.getValueStack().getValue("article");
+        InterpretContext ctx = InterpretContext.current();
+        Object value = ctx.getValueStack().getValue("article");
         if (null != value) {
             return (Contents) value;
         }
@@ -728,7 +747,7 @@ public final class Theme {
         return TaleConst.OPTIONS.get("theme_" + theme + "_options")
                 .filter(StringKit::isNotBlank)
                 .map((String json) -> {
-                    Ason<?,?> ason = JsonKit.toAson(json);
+                    Ason<?, ?> ason = JsonKit.toAson(json);
                     if (!ason.containsKey(key)) {
                         return "";
                     }

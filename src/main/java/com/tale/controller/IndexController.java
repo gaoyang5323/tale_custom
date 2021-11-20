@@ -16,9 +16,7 @@ import io.github.biezhi.anima.enums.OrderBy;
 import io.github.biezhi.anima.page.Page;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static io.github.biezhi.anima.Anima.select;
 
@@ -34,6 +32,8 @@ public class IndexController extends BaseController {
 
     @Inject
     private SiteService siteService;
+
+    private static final String SEACH_NAME = "SEACH_NAME";
 
     /**
      * 首页
@@ -91,13 +91,17 @@ public class IndexController extends BaseController {
 
         page = page < 0 || page > TaleConst.MAX_PAGE ? 1 : page;
 
-        Page<Contents> articles = select().from(Contents.class)
-                .where(Contents::getType, Types.ARTICLE)
-                .and(Contents::getStatus, Types.PUBLISH)
-                .like(Contents::getTitle, "%" + keyword + "%")
-                .order(Contents::getCreated, OrderBy.DESC)
-                .page(page, limit);
-
+        Page<Contents> articles = TaleUtils.cache.get(SEACH_NAME + keyword + page + limit);
+        if (articles == null) {
+            articles = select().from(Contents.class)
+                    .where(Contents::getType, Types.ARTICLE)
+                    .and(Contents::getStatus, Types.PUBLISH)
+                    .like(Contents::getTitle, "%" + keyword + "%")
+                    .order(Contents::getCreated, OrderBy.DESC)
+                    .page(page, limit);
+            TaleUtils.cache.set(SEACH_NAME + keyword + page + limit, articles,
+                    TaleConst.BCONF.getLong("md.cache", -1));
+        }
         request.attribute("articles", articles);
         request.attribute("type", "搜索");
         request.attribute("keyword", keyword);

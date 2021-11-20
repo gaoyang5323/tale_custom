@@ -265,8 +265,8 @@ public class AdminApiController extends BaseController {
         }
         String key = attach.getFkey();
         siteService.cleanCache(Types.SYS_STATISTICS);
-        String             filePath = CLASSPATH.substring(0, CLASSPATH.length() - 1) + key;
-        java.nio.file.Path path     = Paths.get(filePath);
+        String filePath = CLASSPATH.substring(0, CLASSPATH.length() - 1) + key;
+        java.nio.file.Path path = Paths.get(filePath);
         log.info("Delete attach: [{}]", filePath);
         if (Files.exists(path)) {
             Files.delete(path);
@@ -362,9 +362,9 @@ public class AdminApiController extends BaseController {
     @GetRoute("themes")
     public RestResponse getThemes() {
         // 读取主题
-        String         themesDir  = CLASSPATH + "templates/themes";
-        File[]         themesFile = new File(themesDir).listFiles();
-        List<ThemeDto> themes     = new ArrayList<>(themesFile.length);
+        String themesDir = CLASSPATH + "templates/themes";
+        File[] themesFile = new File(themesDir).listFiles();
+        List<ThemeDto> themes = new ArrayList<>(themesFile.length);
         for (File f : themesFile) {
             if (f.isDirectory()) {
                 ThemeDto themeDto = new ThemeDto(f.getName());
@@ -388,7 +388,7 @@ public class AdminApiController extends BaseController {
 
         // theme_milk_options => {  }
         String currentTheme = Commons.site_theme();
-        String key          = "theme_" + currentTheme + "_options";
+        String key = "theme_" + currentTheme + "_options";
 
         Map<String, String> options = new HashMap<>();
         query.forEach((k, v) -> options.put(k, v.get(0)));
@@ -422,9 +422,9 @@ public class AdminApiController extends BaseController {
         if (StringKit.isBlank(templateParam.getFileName())) {
             return RestResponse.fail("缺少参数，请重试");
         }
-        String content   = templateParam.getContent();
+        String content = templateParam.getContent();
         String themePath = Const.CLASSPATH + File.separatorChar + "templates" + File.separatorChar + "themes" + File.separatorChar + Commons.site_theme();
-        String filePath  = themePath + File.separatorChar + templateParam.getFileName();
+        String filePath = themePath + File.separatorChar + templateParam.getFileName();
         if (Files.exists(Paths.get(filePath))) {
             byte[] rf_wiki_byte = content.getBytes("UTF-8");
             Files.write(Paths.get(filePath), rf_wiki_byte);
