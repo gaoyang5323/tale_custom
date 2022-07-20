@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.tale.bootstrap.TaleConst.*;
 import static io.github.biezhi.anima.Anima.delete;
@@ -88,6 +90,8 @@ public class AdminApiController extends BaseController {
     @PostRoute("article/new")
     public RestResponse newArticle(@BodyParam Contents contents) {
         CommonValidator.valid(contents);
+        //添加lightbox图片放大
+        convertImgLightbox(contents);
 
         Users users = this.user();
         contents.setType(Types.ARTICLE);
@@ -104,6 +108,25 @@ public class AdminApiController extends BaseController {
         return RestResponse.ok(cid);
     }
 
+    private void convertImgLightbox(Contents contents) {
+        String content = contents.getContent();
+        if (StringKit.isBlank(content)) {
+            return;
+        }
+        //转换图片
+        String regex = "(\\!\\[alt\\]\\(http)(.*?)(\\))";
+        String lightbox = " <a target='_self' href='IMAGE' data-lightbox=\"example-1\"> <img src='IMAGE'/></a>";
+        Pattern compile = Pattern.compile(regex);
+        Matcher matcher = compile.matcher(content);
+        for (int i = 0; (i < 20) && matcher.find(); i++) {
+            String group = matcher.group();
+            String imgUrl = group.substring(7, group.length() - 1);
+            content = content.replace(group, lightbox.replaceAll("IMAGE", imgUrl));
+            matcher = compile.matcher(content);
+        }
+        contents.setContent(content);
+    }
+
     @PostRoute("article/delete/:cid")
     public RestResponse<?> deleteArticle(@PathParam Integer cid) {
         contentsService.delete(cid);
@@ -117,6 +140,8 @@ public class AdminApiController extends BaseController {
             return RestResponse.fail("缺少参数，请重试");
         }
         CommonValidator.valid(contents);
+        //添加lightbox图片放大
+        convertImgLightbox(contents);
         Integer cid = contents.getCid();
         contentsService.updateArticle(contents);
         return RestResponse.ok(cid);
@@ -249,9 +274,7 @@ public class AdminApiController extends BaseController {
     @GetRoute("attaches")
     public RestResponse attachList(PageParam pageParam) {
 
-        Page<Attach> attachPage = select().from(Attach.class)
-                .order(Attach::getCreated, OrderBy.DESC)
-                .page(pageParam.getPage(), pageParam.getLimit());
+        Page<Attach> attachPage = select().from(Attach.class).order(Attach::getCreated, OrderBy.DESC).page(pageParam.getPage(), pageParam.getLimit());
 
         return RestResponse.ok(attachPage);
     }
